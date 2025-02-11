@@ -1,0 +1,12 @@
+.app-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: 90%;
+  padding: 1em 1em;
+
+  h3 {
+    width: 70%;
+  }
+}

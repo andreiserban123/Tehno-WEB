@@ -1,0 +1,45 @@
+.project-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+ 
+  h1 {
+    text-align: center;
+  }
+
+  table thead th {
+    span {
+      width: 100%;
+    }
+
+    input[type=text], button {
+      margin: 1px;
+    }
+  }
+
+  table tr:nth-child(even) {
+    background-color: var(--secondary-bg-color);
+  }
+
+  table tbody tr:nth-child(odd) {
+    background-color: var(--tertiary-bg-color);
+  }
+
+  table td {
+    padding: 0.5em;
+  }
+
+  table td:last-child {
+    display: flex;
+    justify-content: space-around;
+    gap: 1rem;
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}

@@ -1,0 +1,9 @@
+.paginator {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem;
+
+  button {
+    margin: 0 0.5rem;
+  }
+}
