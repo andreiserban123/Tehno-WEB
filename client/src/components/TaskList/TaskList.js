@@ -38,11 +38,11 @@ const TaskList = () => {
           }
         </tbody>
       </table>
-      <div className='footer'>
-        <button onClick={() => navigate(`/projects/${params.pid}/tasks/new`)}>
-          Create Task
-        </button>
-      </div>
+    {globalState.project.data.userId === globalState.user.data.id &&(   <div className='footer'>
+      <button onClick={() => navigate(`/projects/${params.pid}/tasks/new`)}>
+        Create Task
+      </button>
+    </div>)}
     </div>
   )
 }

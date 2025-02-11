@@ -96,17 +96,40 @@ const updateOwnedProject = async (req, res, next) => {
 
 const deleteOwnedProject = async (req, res, next) => {
   try {
-    const project = await models.Project.findByPk(req.params.pid)
+    const project = await models.Project.findByPk(req.params.pid);
     if (project) {
-      await project.destroy()
-      res.status(204).end()
+      const tasks = await models.Task.findAll({
+        where: {
+          projectId: project.id,
+        },
+      });
+
+      for (const task of tasks) {
+        await models.Permission.destroy({
+          where: {
+            forResource: task.id,
+            type: "task",
+          },
+        });
+        await task.destroy();
+      }
+
+      await models.Permission.destroy({
+        where: {
+          forResource: project.id,
+          type: "project",
+        },
+      });
+
+      await project.destroy();
+      res.status(204).end();
     } else {
-      res.status(404).json({ message: 'Project not found' })
+      res.status(404).json({ message: "Project not found" });
     }
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 export default {
   getAllProjects,
