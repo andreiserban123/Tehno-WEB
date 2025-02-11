@@ -32,7 +32,6 @@ class UserStore {
 
   async logout () {
     try {
-      console.log(this.data)
       const response = await fetch(`${SERVER}/auth/logout`, {
         method: 'post',
         headers: {

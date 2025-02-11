@@ -50,6 +50,8 @@ class TaskStore {
 
   async createOne (state, projectId, task) {
     try {
+      console.log(task);
+      
       const response = await fetch(`${SERVER}/api/users/${state.user.data.id}/projects/${projectId}/tasks`, {
         method: 'post',
         headers: {

@@ -31,8 +31,8 @@ const Task = ({ task }) => {
                 />
                 <button onClick={() => setIsEditing(false)}>Cancel</button>
                 <button onClick={() => {
-                  globalState.task.updateOne(globalState, project.id, {
-                    task, description 
+                  globalState.task.updateOne(globalState, globalState.project.data.id, task.id, {
+                    title, description 
                   })
                   setIsEditing(false)
                 }}>Save</button>

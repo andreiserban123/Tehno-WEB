@@ -10,8 +10,15 @@ const TaskList = () => {
   const [ tasks, setTasks ] = useState([])
   const navigate = useNavigate()
   const params = useParams()
+  
 
   useEffect(() => {
+
+    globalState.project.getOne(globalState, params.pid)
+    globalState.project.emitter.addListener('GET_PROJECT_SUCCESS', () => {
+      
+    })
+
     globalState.task.getAll(globalState, params.pid, )
     globalState.task.emitter.addListener('GET_TASKS_SUCCESS', () => {
       setTasks(globalState.task.data)
@@ -38,7 +45,7 @@ const TaskList = () => {
           }
         </tbody>
       </table>
-    {globalState.project.data.userId === globalState.user.data.id &&(   <div className='footer'>
+    {globalState.project.data.userId === globalState.user.data.id && (   <div className='footer'>
       <button onClick={() => navigate(`/projects/${params.pid}/tasks/new`)}>
         Create Task
       </button>

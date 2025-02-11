@@ -35,6 +35,7 @@ const getAllTasksForProject = async (req, res, next) => {
         attributes: ['id', 'email']
       }]
     })
+    
     res.status(200).json({ data, count })
   } catch (err) {
     next(err)
@@ -76,14 +77,17 @@ const createOwnedTaskForProject = async (req, res, next) => {
   try {
     const task = await models.Task.create({
       ...req.body,
-      projectId: req.params.pid
+      projectId: req.params.pid,
+      userId: req.params.uid
     })
-    await models.Permission.create({
+    const pers = await models.Permission.create({
       forResource: task.id,
       forUser: req.params.uid,
       type: 'task',
-      perms: ['read', 'write']
+      rights: ['read', 'write']
     })
+
+
     res.status(201).json(task)
   } catch (err) {
     next(err)
@@ -118,6 +122,17 @@ const deleteOwnedTaskForProject = async (req, res, next) => {
       }
     })
     if (task) {
+
+      // Delete the permission associated with the task
+      const permission = await models.Permission.findOne({
+        where: {
+          forResource: req.params.tid,
+          forUser: req.params.uid,
+          type: 'task'
+        }
+      })
+      await permission.destroy()
+
       await task.destroy()
       res.status(204).end()
     } else {
