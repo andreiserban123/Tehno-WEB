@@ -1,3 +1,3 @@
-Complete version of the WT examn
+Complete version of the WT exam
 
 npm kill yourself
