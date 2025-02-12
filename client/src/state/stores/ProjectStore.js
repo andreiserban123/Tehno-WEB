@@ -9,7 +9,7 @@ class ProjectStore {
     this.selectedProject = null
   }
 
-  async getAll (state, pageNumber = '', pageSize = '', filterField = '', filterValue = '', sortField = '', sortOrder = '') {  
+  async getAll (state, pageNumber = 1, pageSize = 10, filterField = '', filterValue = '', sortField = '', sortOrder = '') {  
     try {
       const response = await fetch(`${SERVER}/api/users/${state.user.data.id}/projects?pageSize=${pageSize || ''}&pageNumber=${pageNumber || ''}&filterField=${filterField || ''}&filterValue=${filterValue || ''}&sortField=${sortField || ''}&sortOrder=${sortOrder || ''}`, {
         headers: {

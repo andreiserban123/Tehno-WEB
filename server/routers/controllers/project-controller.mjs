@@ -18,9 +18,12 @@ const getAllProjects = async (req, res, next) => {
 			}
 		}
 		if (req.query.pageSize && req.query.pageNumber) {
-			query.limit = req.query.pageSize
-			query.offset = parseInt(req.query.pageSize) * parseInt(req.query.pageNumber)
-		}
+      // fixed pagination
+      const pageSize = parseInt(req.query.pageSize);
+      const pageNumber = parseInt(req.query.pageNumber);
+      query.limit = pageSize;
+      query.offset = pageSize * (pageNumber - 1); // Fix: subtract 1 from pageNumber
+    }
 		if (req.query.sortField && req.query.sortOrder) {
 			query.order = [[req.query.sortField, req.query.sortOrder]]
 		}

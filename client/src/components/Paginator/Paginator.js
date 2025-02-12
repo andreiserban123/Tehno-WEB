@@ -10,7 +10,9 @@ const Paginator = (props) => {
     <div className='paginator'>
       <div className='navigators'>
         <button onClick={() => {
+
           if (page > 1) {
+            
             setPage(page - 1)
             onPageChange(page - 1)
           }
