@@ -15,6 +15,8 @@ const TaskDetails = () => {
   // State pentru comentarii
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editContent, setEditContent] = useState("");
 
   // Use effect actualizat pentru a prelua comentariile
   useEffect(() => {
@@ -125,11 +127,74 @@ const TaskDetails = () => {
             {comments.length > 0 ? (
               comments.map((comment) => (
                 <div key={comment.id} className="comment">
-                  <p>
-                    <strong>{comment.user?.email || "Unknown User"}:</strong>{" "}
-                    {comment.content}
-                  </p>
-                  <span>{new Date(comment.createdAt).toLocaleString()}</span>
+                  {editingCommentId === comment.id ? (
+                    // Edit mode
+                    <div className="edit-comment">
+                      <input
+                        type="text"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                      />
+                      <button
+                        onClick={() => {
+                          if (editContent.trim() !== "") {
+                            globalState.task.updateComment(
+                              globalState,
+                              params.pid,
+                              params.tid,
+                              comment.id,
+                              editContent
+                            );
+                            setEditingCommentId(null);
+                          }
+                        }}
+                      >
+                        Save
+                      </button>
+                      <button onClick={() => setEditingCommentId(null)}>
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    // Display mode
+                    <>
+                      <p>
+                        <strong>
+                          {comment.user?.email || "Unknown User"}:
+                        </strong>{" "}
+                        {comment.content}
+                      </p>
+                      <span>
+                        {new Date(comment.createdAt).toLocaleString()}
+                      </span>
+
+                      {/* Show edit & delete only if user owns the comment */}
+                      {comment.userId === globalState.user.data.id && (
+                        <div className="comment-actions">
+                          <button
+                            onClick={() => {
+                              setEditingCommentId(comment.id);
+                              setEditContent(comment.content);
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() =>
+                              globalState.task.deleteComment(
+                                globalState,
+                                params.pid,
+                                params.tid,
+                                comment.id
+                              )
+                            }
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               ))
             ) : (
@@ -137,7 +202,7 @@ const TaskDetails = () => {
             )}
           </div>
 
-          {/* Input pentru adăugare comentariu */}
+          {/* Input create comment */}
           <div className="comment-input">
             <input
               type="text"
