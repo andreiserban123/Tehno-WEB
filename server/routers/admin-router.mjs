@@ -1,8 +1,14 @@
-import express from 'express'
-import middleware from '../middleware/index.mjs'
+import express from "express";
+import middleware from "../middleware/index.mjs";
 
-const adminRouter = express.Router()
+const adminRouter = express.Router();
 
-adminRouter.use(middleware.getUserTypeMiddleware('admin'))
+adminRouter.use(middleware.auth);
+adminRouter.use(middleware.getUserTypeMiddleware("admin"));
 
-export default adminRouter
+// admin endpoints
+adminRouter.get("/", (req, res) => {
+  res.json({ message: "admin endpoint" });
+});
+
+export default adminRouter;
