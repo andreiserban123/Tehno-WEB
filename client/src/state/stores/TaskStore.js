@@ -9,10 +9,10 @@ class TaskStore {
     this.emitter = new EventEmitter();
   }
 
-  async getAll(state, projectId) {
+  async getAll(state, projectId, pageNumber, pageSize) {
     try {
       const response = await fetch(
-        `${SERVER}/api/users/${state.user.data.id}/projects/${projectId}/tasks`,
+        `${SERVER}/api/users/${state.user.data.id}/projects/${projectId}/tasks?page=${pageNumber}&pageSize=${pageSize}`,
         {
           headers: {
             authorization: state.user.data.token,

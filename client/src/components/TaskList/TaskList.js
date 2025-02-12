@@ -1,5 +1,5 @@
 import './TaskList.css'
-import React, { use, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import AppContext from '../../state/AppContext'
 import { useNavigate, useParams } from 'react-router-dom'
 import Task from './Task'
@@ -10,46 +10,54 @@ const TaskList = () => {
   const [ tasks, setTasks ] = useState([])
   const navigate = useNavigate()
   const params = useParams()
+
+  const [ pageNumber, setPageNumber ] = useState(1)
+  const [ pageSize, setPageSize ] = useState(10)
   
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(parseInt(newSize))
+    setPageNumber(1)
+  }
 
   useEffect(() => {
-
     globalState.project.getOne(globalState, params.pid)
-    globalState.project.emitter.addListener('GET_PROJECT_SUCCESS', () => {
-      
-    })
-
-    globalState.task.getAll(globalState, params.pid, )
+    
+    globalState.task.getAll(globalState, params.pid, pageNumber, pageSize)
     globalState.task.emitter.addListener('GET_TASKS_SUCCESS', () => {
       setTasks(globalState.task.data)
     })
-  }, [])
+  }, [pageNumber, pageSize]) // Add pagination dependencies
 
   return (
-    <div className='task-list'>
+    <div className="task-list">
       <h1>Task list</h1>
       <table>
         <thead>
           <tr>
-            <th>
-              Name
-            </th>
-            <th>
-              Description
-            </th>
+            <th>Name</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
-          {
-            tasks.map(task => <Task key={task.id} task={task} />)
-          }
+          {tasks.map((task) => (
+            <Task key={task.id} task={task} />
+          ))}
         </tbody>
       </table>
-    {globalState.project.data.userId === globalState.user.data.id && (   <div className='footer'>
-      <button onClick={() => navigate(`/projects/${params.pid}/tasks/new`)}>
-        Create Task
-      </button>
-    </div>)}
+      
+      <Paginator
+        onPageChange={(pageNumber) => setPageNumber(pageNumber)}
+        onPageSizeChange={handlePageSizeChange}
+        totalRecords={globalState.task.count}
+      />
+
+      {globalState.project.data.userId === globalState.user.data.id && (
+        <div className="footer">
+          <button onClick={() => navigate(`/projects/${params.pid}/tasks/new`)}>
+            Create Task
+          </button>
+        </div>
+      )}
     </div>
   )
 }

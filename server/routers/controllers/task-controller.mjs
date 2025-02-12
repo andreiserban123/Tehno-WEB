@@ -2,16 +2,24 @@ import models from "../../models/index.mjs";
 
 const getAllTasksForProject = async (req, res, next) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const offset = (page - 1) * pageSize;
+
     const query = {
       where: {
         projectId: req.params.pid,
       },
+      limit: pageSize,
+      offset: offset,
     };
+
     const filterQuery = {
       where: {
         projectId: req.params.pid,
       },
     };
+
     const count = await models.Task.count({
       ...filterQuery,
       include: {
@@ -23,6 +31,7 @@ const getAllTasksForProject = async (req, res, next) => {
         required: false,
       },
     });
+
     const data = await models.Task.findAll({
       ...query,
       include: [
