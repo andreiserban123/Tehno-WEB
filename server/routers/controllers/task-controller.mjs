@@ -1,4 +1,4 @@
-import models from '../../models/index.mjs'
+import models from "../../models/index.mjs";
 
 const getAllTasksForProject = async (req, res, next) => {
   try {
@@ -13,189 +13,200 @@ const getAllTasksForProject = async (req, res, next) => {
       },
     };
     const count = await models.Task.count({
-      ...filterQuery, 
+      ...filterQuery,
       include: {
         model: models.Permission,
         where: {
           forUser: req.params.uid,
-          type: 'task'
+          type: "task",
         },
-        required: false
-      } 
-    })
+        required: false,
+      },
+    });
     const data = await models.Task.findAll({
       ...query,
-      include: [{
-        model: models.Permission,
-        where: {
-          forUser: req.params.uid,
-          type: 'task'
+      include: [
+        {
+          model: models.Permission,
+          where: {
+            forUser: req.params.uid,
+            type: "task",
+          },
+          required: false,
         },
-        required: false
-      }, {
-        model: models.User,
-        required: false,
-        as: 'assignedTo',
-        attributes: ['id', 'email']
-      }]
-    })
-    
-    res.status(200).json({ data, count })
+        {
+          model: models.User,
+          required: false,
+          as: "assignedTo",
+          attributes: ["id", "email"],
+        },
+      ],
+    });
+
+    res.status(200).json({ data, count });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 const getOneTaskForProject = async (req, res, next) => {
   try {
     const task = await models.Task.findOne({
       where: {
         id: req.params.tid,
-        projectId: req.params.pid
-      },  
-      include: [{
-        model: models.Permission,
-        where: {
-          forUser: req.params.uid,
-          type: 'task'
+        projectId: req.params.pid,
+      },
+      include: [
+        {
+          model: models.Permission,
+          where: {
+            forUser: req.params.uid,
+            type: "task",
+          },
+          required: false,
         },
-        required: false
-      }, {
-        model: models.User,
-        required: false,
-        as: 'assignedTo',
-        attributes: ['id', 'email']
-      }]
-    })
+        {
+          model: models.User,
+          required: false,
+          as: "assignedTo",
+          attributes: ["id", "email"],
+        },
+      ],
+    });
     if (task) {
-      res.status(200).json(task)
+      res.status(200).json(task);
     } else {
-      res.status(404).json({ message: 'Task not found' })
+      res.status(404).json({ message: "Task not found" });
     }
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 const createOwnedTaskForProject = async (req, res, next) => {
   try {
     const task = await models.Task.create({
       ...req.body,
       projectId: req.params.pid,
-      userId: req.params.uid
-    })
+      userId: req.params.uid,
+    });
     const pers = await models.Permission.create({
       forResource: task.id,
       forUser: req.params.uid,
-      type: 'task',
-      rights: ['read', 'write']
-    })
+      type: "task",
+      rights: ["read", "write"],
+    });
 
-
-    res.status(201).json(task)
+    res.status(201).json(task);
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 const updateOwnedTaskForProject = async (req, res, next) => {
   try {
     const task = await models.Task.findOne({
       where: {
         id: req.params.tid,
-        projectId: req.params.pid
-      }
-    })
+        projectId: req.params.pid,
+      },
+    });
     if (task) {
-      await task.update(req.body)
-      res.status(200).json(task)
+      await task.update(req.body);
+      res.status(200).json(task);
     } else {
-      res.status(404).json({ message: 'Task not found' })
+      res.status(404).json({ message: "Task not found" });
     }
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 const deleteOwnedTaskForProject = async (req, res, next) => {
   try {
     const task = await models.Task.findOne({
       where: {
         id: req.params.tid,
-        projectId: req.params.pid
-      }
-    })
+        projectId: req.params.pid,
+      },
+    });
     if (task) {
+      // Delete all comments associated with the task
+      await models.Comment.destroy({
+        where: {
+          taskId: req.params.tid,
+        },
+      });
 
       // Delete the permission associated with the task
       const permission = await models.Permission.findOne({
         where: {
           forResource: req.params.tid,
           forUser: req.params.uid,
-          type: 'task'
-        }
-      })
-      await permission.destroy()
+          type: "task",
+        },
+      });
+      await permission.destroy();
 
-      await task.destroy()
-      res.status(204).end()
+      await task.destroy();
+      res.status(204).end();
     } else {
-      res.status(404).json({ message: 'Task not found' })
+      res.status(404).json({ message: "Task not found" });
     }
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 const assignTaskToUser = async (req, res, next) => {
   try {
     const task = await models.Task.findOne({
       where: {
         id: req.params.tid,
-        projectId: req.params.pid
-      }
-    })
+        projectId: req.params.pid,
+      },
+    });
 
     if (!task) {
-      return res.status(404).json({ message: 'Task not found' })
+      return res.status(404).json({ message: "Task not found" });
     }
-    
+
     const user = await models.User.findOne({
       where: {
-        id: req.body.assignedTo
-      }
-    })
+        id: req.body.assignedTo,
+      },
+    });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' })
+      return res.status(404).json({ message: "User not found" });
     }
 
-    await task.update({ assignedToId: req.body.assignedTo })
-    res.status(200).json(task)
+    await task.update({ assignedToId: req.body.assignedTo });
+    res.status(200).json(task);
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 const updateAssignedTaskStatus = async (req, res, next) => {
   try {
     const task = await models.Task.findOne({
       where: {
         id: req.params.tid,
-        projectId: req.params.pid
-      }
-    })
+        projectId: req.params.pid,
+      },
+    });
 
     if (!task) {
-      return res.status(404).json({ message: 'Task not found' })
+      return res.status(404).json({ message: "Task not found" });
     }
 
-    await task.update({ status: req.body.status })
-    res.status(200).json(task)
+    await task.update({ status: req.body.status });
+    res.status(200).json(task);
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 
 export default {
   getAllTasksForProject,
@@ -204,5 +215,5 @@ export default {
   updateOwnedTaskForProject,
   deleteOwnedTaskForProject,
   assignTaskToUser,
-  updateAssignedTaskStatus
-}
+  updateAssignedTaskStatus,
+};
