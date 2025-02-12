@@ -3,11 +3,15 @@ import models from '../../models/index.mjs'
 const getAllTasksForProject = async (req, res, next) => {
   try {
     const query = {
-      projectId: req.params.pid
-    }
+      where: {
+        projectId: req.params.pid,
+      },
+    };
     const filterQuery = {
-      projectId: req.params.pid
-    }
+      where: {
+        projectId: req.params.pid,
+      },
+    };
     const count = await models.Task.count({
       ...filterQuery, 
       include: {
