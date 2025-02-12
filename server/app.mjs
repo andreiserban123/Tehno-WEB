@@ -14,9 +14,11 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(express.json())
 
-// routers
+// routers 
 app.use('/auth', routers.auth)
 app.use('/api', routers.api)
+// admin router
+app.use('/admin', routers.admin)
 
 // error middleware
 app.use(middleware.genericError)
