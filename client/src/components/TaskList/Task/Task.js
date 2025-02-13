@@ -84,6 +84,7 @@ const Task = ({ task }) => {
         <>
           <td>{task.title}</td>
           <td>{task.description}</td>
+          <td>{task.label}</td>
           <td>{task.status}</td>
           <td>{task.assignedTo ? task.assignedTo.email : "unassigned"}</td>
           <td>

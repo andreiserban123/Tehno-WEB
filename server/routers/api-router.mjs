@@ -44,7 +44,7 @@ apiRouter.put(
 );
 apiRouter.delete(
   "/users/:uid/projects/:pid/tasks/:tid",
-  middleware.getPermMiddleware("pid", ["write"]),
+  middleware.getPermMiddleware("tid", ["write"]), // Aici este gresit! Ca sa stegem un task de ce sa avem nevoie de write pe proiect?
   controllers.task.deleteOwnedTaskForProject
 );
 apiRouter.post(
