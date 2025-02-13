@@ -44,6 +44,7 @@ const Task = ({ task }) => {
                     {
                       title,
                       description,
+                      label,
                     }
                   );
                   setIsEditing(false);
