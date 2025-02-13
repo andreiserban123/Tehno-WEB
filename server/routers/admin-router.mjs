@@ -1,15 +1,15 @@
-import express from 'express'
-import middleware from '../middleware/index.mjs'
-import controllers from './controllers/index.mjs'
-const adminRouter = express.Router()
+import express from "express";
+import middleware from "../middleware/index.mjs";
+import controllers from "./controllers/index.mjs";
+const adminRouter = express.Router();
 
-adminRouter.use(middleware.auth)
-adminRouter.use(middleware.getUserTypeMiddleware('admin'))
+adminRouter.use(middleware.auth);
+adminRouter.use(middleware.getUserTypeMiddleware("admin"));
 
 // admin endpoints
-adminRouter.get('/users', controllers.admin.getAllUsers)
-adminRouter.delete('/users/:id', controllers.admin.deleteUser)
-adminRouter.post('/users', controllers.admin.createUser)
+adminRouter.get("/users", controllers.admin.getAllUsers);
+adminRouter.delete("/users/:id", controllers.admin.deleteUser);
+adminRouter.post("/users", controllers.admin.createUser);
+adminRouter.put("/users/:id", controllers.admin.updateUser);
 
-
-export default adminRouter
+export default adminRouter;

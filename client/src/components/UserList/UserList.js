@@ -2,10 +2,12 @@ import React, { useContext, useEffect, useState } from "react";
 import AppContext from "../../state/AppContext";
 import "./UserList.css";
 import { useNavigate } from "react-router-dom";
+import User from "./User";
 
 const UserList = () => {
   const globalState = useContext(AppContext);
   const [users, setUsers] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,16 +32,15 @@ const UserList = () => {
         <thead>
           <tr>
             <th>Email</th>
+            <th>Password</th>
             <th>Type</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>{user.email}</td>
-              <td>{user.type}</td>
-            </tr>
-          ))}
+          {users.map((user) => {
+            return <User user={user} key={user.id} />;
+          })}
         </tbody>
       </table>
 

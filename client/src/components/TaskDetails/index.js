@@ -1,3 +1,3 @@
-import TaskDetails from './TaskDetails'
+import TaskDetails from "./TaskDetails";
 
-export default TaskDetails
+export default TaskDetails;

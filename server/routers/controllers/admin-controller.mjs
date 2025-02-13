@@ -4,10 +4,40 @@ import bcrypt from "bcrypt";
 
 const getAllUsers = async (req, res, next) => {
   try {
-    const users = await models.User.findAll();
+    const exceptId = req.query.exceptId;
+
+    if (!exceptId) {
+      exceptId = 0;
+    }
+    const users = await models.User.findAll({
+      where: {
+        id: {
+          [Op.ne]: exceptId,
+        },
+      },
+    });
     res.status(200).json(users);
   } catch (err) {
     next(err);
+  }
+};
+
+const updateUser = async (req, res, next) => {
+  try {
+    const user = await models.User.findByPk(req.params.id);
+
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    user.email = req.body.email;
+    user.passwordHash = await bcrypt.hash(req.body.password, 10);
+    user.type = req.body.type;
+    await user.save();
+    res.status(200).json(user);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -59,4 +89,5 @@ export default {
   getAllUsers,
   deleteUser,
   createUser,
+  updateUser,
 };

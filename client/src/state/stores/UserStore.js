@@ -53,9 +53,29 @@ class UserStore {
     }
   }
 
+  async deleteOne(id) {
+    try {
+      const response = await fetch(`${SERVER}/admin/users/${id}`, {
+        method: "delete",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: this.data.token,
+        },
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      this.getAll();
+    } catch (error) {
+      console.warn(error);
+      this.emitter.emit("DELETE_USER_ERROR");
+    }
+  }
+
   async getAll() {
     try {
-      const response = await fetch(`${SERVER}/admin/users`, {
+      const url = `${SERVER}/admin/users?exceptId=${this.data.id}`;
+      const response = await fetch(url, {
         method: "get",
         headers: {
           "Content-Type": "application/json",
@@ -68,11 +88,30 @@ class UserStore {
       }
 
       this.list = await response.json();
-      console.log(this.list);
       this.emitter.emit("GET_USERS_SUCCESS");
     } catch (err) {
       console.warn(err);
       this.emitter.emit("GET_USERS_ERROR");
+    }
+  }
+
+  async updateOne(user) {
+    try {
+      const response = await fetch(`${SERVER}/admin/users/${user.id}`, {
+        method: "put",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: this.data.token,
+        },
+        body: JSON.stringify(user),
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      this.getAll();
+    } catch (err) {
+      console.warn(err);
+      this.emitter.emit("UPDATE_USER_ERROR");
     }
   }
 
