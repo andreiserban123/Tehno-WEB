@@ -116,6 +116,7 @@ class TaskStore {
       if (!response.ok) {
         throw response;
       }
+      // Aici este problema. Get all intoarce un array gol
       this.getAll(state);
     } catch (err) {
       console.warn(err);
