@@ -96,11 +96,15 @@ const TaskDetails = () => {
                 Select your option
               </option>
 
-              {suggestions.map((suggestion) => (
-                <option key={suggestion.id} value={suggestion.id}>
-                  {suggestion.email}
-                </option>
-              ))}
+              {suggestions
+                .filter(
+                  (suggestion) => suggestion.id !== globalState.user.data.id
+                )
+                .map((suggestion) => (
+                  <option key={suggestion.id} value={suggestion.id}>
+                    {suggestion.email}
+                  </option>
+                ))}
             </select>
             <button
               onClick={() => {
