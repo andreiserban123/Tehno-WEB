@@ -1,32 +1,32 @@
-import './TaskList.css'
-import React, { useContext, useEffect, useState } from 'react'
-import AppContext from '../../state/AppContext'
-import { useNavigate, useParams } from 'react-router-dom'
-import Task from './Task'
-import Paginator from '../Paginator/Paginator'
+import "./TaskList.css";
+import React, { useContext, useEffect, useState } from "react";
+import AppContext from "../../state/AppContext";
+import { useNavigate, useParams } from "react-router-dom";
+import Task from "./Task";
+import Paginator from "../Paginator/Paginator";
 
 const TaskList = () => {
-  const globalState = useContext(AppContext)
-  const [ tasks, setTasks ] = useState([])
-  const navigate = useNavigate()
-  const params = useParams()
+  const globalState = useContext(AppContext);
+  const [tasks, setTasks] = useState([]);
+  const navigate = useNavigate();
+  const params = useParams();
 
-  const [ pageNumber, setPageNumber ] = useState(1)
-  const [ pageSize, setPageSize ] = useState(10)
-  
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   const handlePageSizeChange = (newSize) => {
-    setPageSize(parseInt(newSize))
-    setPageNumber(1)
-  }
+    setPageSize(parseInt(newSize));
+    setPageNumber(1);
+  };
 
   useEffect(() => {
-    globalState.project.getOne(globalState, params.pid)
-    
-    globalState.task.getAll(globalState, params.pid, pageNumber, pageSize)
-    globalState.task.emitter.addListener('GET_TASKS_SUCCESS', () => {
-      setTasks(globalState.task.data)
-    })
-  }, [pageNumber, pageSize]) // Add pagination dependencies
+    globalState.project.getOne(globalState, params.pid);
+
+    globalState.task.getAll(globalState, params.pid, pageNumber, pageSize);
+    globalState.task.emitter.addListener("GET_TASKS_SUCCESS", () => {
+      setTasks(globalState.task.data);
+    });
+  }, [pageNumber, pageSize]); // Add pagination dependencies
 
   return (
     <div className="task-list">
@@ -44,22 +44,20 @@ const TaskList = () => {
           ))}
         </tbody>
       </table>
-      
+
       <Paginator
         onPageChange={(pageNumber) => setPageNumber(pageNumber)}
         onPageSizeChange={handlePageSizeChange}
         totalRecords={globalState.task.count}
       />
 
-      {globalState.project.data.userId === globalState.user.data.id && (
-        <div className="footer">
-          <button onClick={() => navigate(`/projects/${params.pid}/tasks/new`)}>
-            Create Task
-          </button>
-        </div>
-      )}
+      <div className="footer">
+        <button onClick={() => navigate(`/projects/${params.pid}/tasks/new`)}>
+          Create Task
+        </button>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default TaskList
+export default TaskList;

@@ -34,7 +34,7 @@ apiRouter.get(
 );
 apiRouter.post(
   "/users/:uid/projects/:pid/tasks",
-  middleware.getPermMiddleware("pid", ["write"]),
+  // middleware.getPermMiddleware("pid", ["write"]),
   controllers.task.createOwnedTaskForProject
 );
 apiRouter.put(
