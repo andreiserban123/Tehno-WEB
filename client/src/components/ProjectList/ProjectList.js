@@ -1,34 +1,49 @@
-import './ProjectList.css'
-import React, { useContext, useEffect, useState } from 'react'
-import AppContext from '../../state/AppContext'
-import { useNavigate } from 'react-router-dom'
+import "./ProjectList.css";
+import React, { useContext, useEffect, useState } from "react";
+import AppContext from "../../state/AppContext";
+import { useNavigate } from "react-router-dom";
 
-import Project from './Project'
-import Paginator from '../Paginator/Paginator'
+import Project from "./Project";
+import Paginator from "../Paginator/Paginator";
 
 const ProjectList = () => {
-  const globalState = useContext(AppContext)
-  const navigate = useNavigate()
-  const [ projects, setProjects ] = useState([])
-  const [ pageNumber, setPageNumber ] = useState('')
-  const [ pageSize, setPageSize ] = useState('')
-  const [ filterField, setFilterField ] = useState('')
-  const [ filterValue, setFilterValue ] = useState('')
-  const [ sortField, setSortField ] = useState('')
-  const [ sortOrder, setSortOrder ] = useState('')
+  const globalState = useContext(AppContext);
+  const navigate = useNavigate();
+  const [projects, setProjects] = useState([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [filterField, setFilterField] = useState("");
+  const [filterValue, setFilterValue] = useState("");
+  const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
 
   useEffect(() => {
-    globalState.project.getAll(globalState, pageNumber, pageSize, filterField, filterValue, sortField, sortOrder)
-    globalState.project.emitter.addListener('GET_PROJECTS_SUCCESS', () => {
-      setProjects(globalState.project.data)
-    })
-  }, [ pageNumber, pageSize, filterField, filterValue, sortField, sortOrder ])
+    globalState.project.getAll(
+      globalState,
+      pageNumber,
+      pageSize,
+      filterField,
+      filterValue,
+      sortField,
+      sortOrder
+    );
+    const subscription = globalState.project.emitter.addListener(
+      "GET_PROJECTS_SUCCESS",
+      () => {
+        setProjects(globalState.project.data);
+      }
+    );
+    return () => {
+      console.log("ProjectList: Unsubscribing from GET_PROJECTS_SUCCESS");
+      subscription.remove();
+    };
+  }, [pageNumber, pageSize, filterField, filterValue, sortField, sortOrder]);
 
   // added handlePageSizeChange function
-  const handlePageSizeChange = (newSize) =>{
-    setPageSize(parseInt(newSize))
-    setPageNumber(1)
-  }
+  const handlePageSizeChange = (newSize) => {
+    setPageSize(parseInt(newSize));
+    setPageNumber(1);
+  };
   return (
     <div className="project-list">
       <h1>Project List</h1>
@@ -110,6 +125,6 @@ const ProjectList = () => {
       </div>
     </div>
   );
-}
+};
 
-export default ProjectList
+export default ProjectList;
