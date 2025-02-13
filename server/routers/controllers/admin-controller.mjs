@@ -3,32 +3,26 @@ import { Op } from "sequelize";
 import bcrypt from "bcrypt";
 
 const getAllUsers = async (req, res, next) => {
-    try {
-        const users = await models.User.findAll({
-            where: {
-                type: {
-                    [Op.ne]: 'admin'  // excludes admin users
-                }
-            }
-        });
-        res.status(200).json(users);
-    } catch (err) {
-        next(err);
-    }
-}
+  try {
+    const users = await models.User.findAll();
+    res.status(200).json(users);
+  } catch (err) {
+    next(err);
+  }
+};
 
 const createUser = async (req, res, next) => {
-    try{
-        const user = await models.User.create({
-            email: req.body.email,
-            passwordHash: await bcrypt.hash(req.body.password,10),
-            type: req.body.type
-        });
-        res.status(201).json(user);
-    }catch(err){
-        next(err);
-    }
-}
+  try {
+    const user = await models.User.create({
+      email: req.body.email,
+      passwordHash: await bcrypt.hash(req.body.password, 10),
+      type: req.body.type,
+    });
+    res.status(201).json(user);
+  } catch (err) {
+    next(err);
+  }
+};
 
 const deleteUser = async (req, res, next) => {
   try {
@@ -40,22 +34,21 @@ const deleteUser = async (req, res, next) => {
     }
 
     await models.Permission.destroy({
-        where: { forUser: user.id },
+      where: { forUser: user.id },
     });
 
     await models.Task.destroy({
-        where: { userId: user.id },
+      where: { userId: user.id },
     });
-    
-    
+
     await models.Project.destroy({
       where: { userId: user.id },
     });
 
     await user.destroy();
     res.status(200).json({
-        message: "User deleted successfully",
-        userID: user.id
+      message: "User deleted successfully",
+      userID: user.id,
     });
   } catch (err) {
     next(err);
@@ -63,7 +56,7 @@ const deleteUser = async (req, res, next) => {
 };
 
 export default {
-    getAllUsers,
-    deleteUser,
-    createUser
-}
+  getAllUsers,
+  deleteUser,
+  createUser,
+};

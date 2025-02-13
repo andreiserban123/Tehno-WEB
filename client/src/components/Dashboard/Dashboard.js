@@ -13,7 +13,7 @@ const Dashboard = () => {
       {
         globalState.user.data.type === 'admin' && (
           <div>
-            TODO
+            <Link to='/dashboard/users'>Users</Link>
           </div>
         )
       }
