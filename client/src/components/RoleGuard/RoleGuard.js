@@ -1,7 +1,6 @@
 import React from "react";
 
-const AdminGuard = ({ state, children, role }) => {
-  
+const RoleGuard = ({ state, children, role }) => {
   if (state !== role) {
     return (
       <div>
@@ -14,4 +13,4 @@ const AdminGuard = ({ state, children, role }) => {
   return children;
 };
 
-export default AdminGuard;
+export default RoleGuard;

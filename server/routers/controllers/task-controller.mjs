@@ -94,6 +94,7 @@ const getOneTaskForProject = async (req, res, next) => {
 
 const createOwnedTaskForProject = async (req, res, next) => {
   try {
+    console.log(req.body);
     const task = await models.Task.create({
       ...req.body,
       projectId: req.params.pid,
