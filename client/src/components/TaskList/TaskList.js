@@ -1,5 +1,5 @@
 import "./TaskList.css";
-import React, { useContext, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import AppContext from "../../state/AppContext";
 import { useNavigate, useParams } from "react-router-dom";
 import Task from "./Task";
@@ -11,22 +11,38 @@ const TaskList = () => {
   const navigate = useNavigate();
   const params = useParams();
 
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pageNumber, setPageNumber] = useState(0);
   const [pageSize, setPageSize] = useState(10);
 
-  const handlePageSizeChange = (newSize) => {
-    setPageSize(parseInt(newSize));
-    setPageNumber(1);
-  };
+  const [filterField, setFilterField] = useState("");
+  const [filterValue, setFilterValue] = useState("");
+
+  const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState("");
 
   useEffect(() => {
-    globalState.project.getOne(globalState, params.pid);
-
-    globalState.task.getAll(globalState, params.pid, pageNumber, pageSize);
+    globalState.task.getAll(
+      globalState,
+      params.pid,
+      pageNumber,
+      pageSize,
+      filterField,
+      filterValue,
+      sortField,
+      sortOrder
+    );
     globalState.task.emitter.addListener("GET_TASKS_SUCCESS", () => {
       setTasks(globalState.task.data);
     });
-  }, [pageNumber, pageSize]); // Add pagination dependencies
+  }, [
+    pageNumber,
+    pageSize,
+    filterField,
+    filterValue,
+    sortField,
+    sortOrder,
+    params.pid,
+  ]);
 
   return (
     <div className="task-list">
@@ -34,10 +50,36 @@ const TaskList = () => {
       <table>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>
+              Name
+              <input
+                type="text"
+                onChange={(e) => {
+                  setFilterValue(e.target.value);
+                  setFilterField("title");
+                }}
+                placeholder="title filter"
+              />
+              <button
+                onClick={() => {
+                  setSortField("title");
+                  setSortOrder("asc");
+                }}
+              >
+                ⌃
+              </button>
+              <button
+                onClick={() => {
+                  setSortField("title");
+                  setSortOrder("desc");
+                }}
+              >
+                ⌄
+              </button>
+            </th>
             <th>Description</th>
-            <th>Label</th>
             <th>Status</th>
+            <th>Label</th>
             <th>Assigned To</th>
             <th>Actions</th>
           </tr>
@@ -48,18 +90,17 @@ const TaskList = () => {
           ))}
         </tbody>
       </table>
-
-      <Paginator
-        onPageChange={(pageNumber) => setPageNumber(pageNumber)}
-        onPageSizeChange={handlePageSizeChange}
-        totalRecords={globalState.task.count}
-      />
-
       <div className="footer">
         <button onClick={() => navigate(`/projects/${params.pid}/tasks/new`)}>
           Create Task
         </button>
       </div>
+
+      <Paginator
+        onPageChange={(pageNumber) => setPageNumber(pageNumber)}
+        onPageSizeChange={(pageSize) => setPageSize(pageSize)}
+        totalRecords={globalState.task.count}
+      />
     </div>
   );
 };

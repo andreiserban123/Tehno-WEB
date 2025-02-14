@@ -12,24 +12,22 @@ const TaskDetails = () => {
   const [selectedTask, setSelectedTask] = useState({});
   const [selectedStatus, setSelectedStatus] = useState("");
 
-  // State pentru comentarii
+  //State pentru comentarii
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editContent, setEditContent] = useState("");
-
-  // Use effect actualizat pentru a prelua comentariile
   useEffect(() => {
-    globalState.task.getOne(globalState, params.pid, params.tid);
+    // comments
+    globalState.task.emitter.addListener("GET_COMMENTS_SUCCESS", () => {
+      setComments(globalState.task.selectedTask.comments || []);
+    });
     globalState.task.getComments(globalState, params.pid, params.tid);
 
     globalState.task.emitter.addListener("GET_TASK_SUCCESS", () => {
       setSelectedTask(globalState.task.selectedTask);
     });
-
-    globalState.task.emitter.addListener("GET_COMMENTS_SUCCESS", () => {
-      setComments(globalState.task.selectedTask.comments || []);
-    });
+    globalState.task.getOne(globalState, params.pid, params.tid);
   }, []);
 
   useEffect(() => {
@@ -96,15 +94,11 @@ const TaskDetails = () => {
                 Select your option
               </option>
 
-              {suggestions
-                .filter(
-                  (suggestion) => suggestion.id !== globalState.user.data.id
-                )
-                .map((suggestion) => (
-                  <option key={suggestion.id} value={suggestion.id}>
-                    {suggestion.email}
-                  </option>
-                ))}
+              {suggestions.map((suggestion) => (
+                <option key={suggestion.id} value={suggestion.id}>
+                  {suggestion.email}
+                </option>
+              ))}
             </select>
             <button
               onClick={() => {

@@ -10,12 +10,12 @@
  */
 export default (sequelize, DataTypes) => {
   return sequelize.define('project', {
-    name: { 
-      type: DataTypes.STRING, 
-      allowNull: false 
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
-    description: { 
-      type: DataTypes.TEXT 
-    },  
+    description: {
+      type: DataTypes.TEXT
+    }
   })
 }

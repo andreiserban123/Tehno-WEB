@@ -15,7 +15,6 @@ const ProjectForm = () => {
     })
   }, [])
 
-
   return (
     <div>
       <h1>Project Form</h1>
@@ -23,18 +22,18 @@ const ProjectForm = () => {
         type='text'
         placeholder='name'
         value={name}
-        onChange={e => setName(e.target.value)} 
+        onChange={e => setName(e.target.value)}
       />
       <input
         type='text'
         placeholder='description'
         value={description}
-        onChange={e => setDescription(e.target.value)} 
+        onChange={e => setDescription(e.target.value)}
       />
-      <button onClick={() => 
-        {
-          globalState.project.createOne(globalState, { name, description })
-        }}>
+      <button onClick={() => {
+        globalState.project.createOne(globalState, { name, description })
+      }}
+      >
         Create
       </button>
     </div>

@@ -8,6 +8,27 @@ class UserStore {
     this.emitter = new EventEmitter();
   }
 
+  async register(email, password) {
+    try {
+      const response = await fetch(`${SERVER}/auth/register`, {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      this.emitter.emit("REGISTER_SUCCESS");
+    } catch (err) {
+      console.warn(err);
+      this.emitter.emit("REGISTER_ERROR");
+    }
+  }
   async login(email, password) {
     try {
       const response = await fetch(`${SERVER}/auth/login`, {
@@ -33,6 +54,7 @@ class UserStore {
 
   async logout() {
     try {
+      console.log(this.data);
       const response = await fetch(`${SERVER}/auth/logout`, {
         method: "post",
         headers: {
@@ -71,10 +93,10 @@ class UserStore {
       this.emitter.emit("DELETE_USER_ERROR");
     }
   }
-
+  // admin
   async getAll() {
     try {
-      const url = `${SERVER}/admin/users?exceptId=${this.data.id}`;
+      const url = `${SERVER}/admin/users`;
       const response = await fetch(url, {
         method: "get",
         headers: {

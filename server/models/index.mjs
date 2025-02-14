@@ -23,22 +23,25 @@ Project.belongsTo(User);
 Project.hasMany(Task);
 Task.belongsTo(Project);
 
-Project.hasOne(Permission, { foreignKey: "forResource", constraints: false });
-Task.hasOne(Permission, { foreignKey: "forResource", constraints: false });
+Project.hasOne(Permission, {
+  foreignKey: "forResource",
+  constraints: false,
+});
+Task.hasOne(Permission, {
+  foreignKey: "forResource",
+  constraints: false,
+});
 
 Task.belongsTo(User, { as: "assignedTo" });
 User.hasOne(Task);
-
-Task.hasMany(Comment, { foreignKey: "taskId", onDelete: "CASCADE" });
-Comment.belongsTo(Task, { foreignKey: "taskId" });
 
 User.hasMany(Comment, { foreignKey: "userId", onDelete: "CASCADE" });
 Comment.belongsTo(User, { foreignKey: "userId" });
 
 try {
   await sequelize.sync({
-    // alter: false,
     // force: true,
+    // alter: true,
   });
 } catch (err) {
   console.warn(err);

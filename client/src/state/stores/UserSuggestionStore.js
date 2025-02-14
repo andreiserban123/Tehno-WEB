@@ -2,7 +2,7 @@ import EventEmitter from '../../utils/EventEmitter'
 import { SERVER } from '../../config/global'
 
 class UserSuggestionStore {
-   constructor () {
+  constructor () {
     this.data = []
     this.emitter = new EventEmitter()
   }
@@ -24,7 +24,6 @@ class UserSuggestionStore {
       this.emitter.emit('USER_SEARCH_ERROR')
     }
   }
-
 }
 
 export default UserSuggestionStore

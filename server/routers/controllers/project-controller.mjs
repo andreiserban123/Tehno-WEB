@@ -1,5 +1,5 @@
 import models from "../../models/index.mjs";
-import { Op, where } from "sequelize";
+import { Op } from "sequelize";
 
 const getAllProjects = async (req, res, next) => {
   try {
@@ -18,11 +18,9 @@ const getAllProjects = async (req, res, next) => {
       };
     }
     if (req.query.pageSize && req.query.pageNumber) {
-      // fixed pagination
-      const pageSize = parseInt(req.query.pageSize);
-      const pageNumber = parseInt(req.query.pageNumber);
-      query.limit = pageSize;
-      query.offset = pageSize * (pageNumber - 1); // Fix: subtract 1 from pageNumber
+      query.limit = req.query.pageSize;
+      query.offset =
+        parseInt(req.query.pageSize) * parseInt(req.query.pageNumber);
     }
     if (req.query.sortField && req.query.sortOrder) {
       query.order = [[req.query.sortField, req.query.sortOrder]];
@@ -70,6 +68,12 @@ const getOneOwnedProject = async (req, res, next) => {
 
 const createOwnedProject = async (req, res, next) => {
   try {
+    // req.body =
+    //  {
+    //  "name" : "Project 1",
+    //  "description" : "This is project 1"
+    //  }
+
     const project = await models.Project.create({
       ...req.body,
       userId: req.params.uid,
@@ -104,36 +108,43 @@ const updateOwnedProject = async (req, res, next) => {
 const deleteOwnedProject = async (req, res, next) => {
   try {
     const project = await models.Project.findByPk(req.params.pid);
-    if (project) {
-      const tasks = await models.Task.findAll({
+    const permission = await models.Permission.findOne({
+      where: {
+        forResource: req.params.pid,
+        forUser: req.params.uid,
+        type: "project",
+      },
+    });
+
+    const tasks = await models.Task.findAll({
+      where: {
+        projectId: req.params.pid,
+      },
+    });
+
+    if (tasks) {
+      // find all the permissions for the tasks
+      const taskPermissions = await models.Permission.findAll({
         where: {
-          projectId: project.id,
+          forResource: {
+            [Op.in]: tasks.map((task) => task.id),
+          },
+          type: "task",
         },
       });
-
-      for (const task of tasks) {
-        await models.Comment.destroy({
-          where: {
-            taskId: task.id,
-          },
-        });
-
-        await models.Permission.destroy({
-          where: {
-            forResource: task.id,
-            type: "task",
-          },
-        });
+      // delete all the permissions for the tasks
+      for (let i = 0; i < taskPermissions.length; i++) {
+        const taskPermission = taskPermissions[i];
+        await taskPermission.destroy();
+      }
+      // delete all the tasks
+      for (let i = 0; i < tasks.length; i++) {
+        const task = tasks[i];
         await task.destroy();
       }
-
-      await models.Permission.destroy({
-        where: {
-          forResource: project.id,
-          type: "project",
-        },
-      });
-
+    }
+    if (project && permission) {
+      await permission.destroy();
       await project.destroy();
       res.status(204).end();
     } else {

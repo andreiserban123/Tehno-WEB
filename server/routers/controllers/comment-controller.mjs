@@ -1,38 +1,36 @@
 import models from "../../models/index.mjs";
 
-const getAllCommentsForTask = async (req, res, next) => {
+const getAllTaskComments = async (req, res, next) => {
   try {
-    const comments = await models.Comment.findAll({
-      where: { taskId: req.params.tid },
-      include: {
-        model: models.User,
-        attributes: ["id", "email"],
+    const taskComments = await models.Comment.findAll({
+      where: {
+        taskId: req.params.tid,
       },
-      order: [["createdAt", "ASC"]],
+      include: [
+        {
+          model: models.User,
+          attributes: ["email"],
+          required: true,
+        },
+      ],
+      order: [["createdAt", "DESC"]],
     });
-
-    res.status(200).json(comments);
+    res.status(200).json(taskComments);
   } catch (err) {
     next(err);
   }
 };
 
-const createCommentForTask = async (req, res, next) => {
+const createTaskComment = async (req, res, next) => {
   try {
-    const { content } = req.body;
-    if (!content) {
-      return res.status(400).json({ message: "Content is required" });
-    }
-
-    const comment = await models.Comment.create({
-      content,
+    const taskComment = await models.Comment.create({
+      content: req.body.content,
       taskId: req.params.tid,
       userId: req.params.uid,
     });
-
-    res.status(201).json(comment);
-  } catch (err) {
-    next(err);
+    res.status(201).json(taskComment);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -83,8 +81,8 @@ const deleteComment = async (req, res, next) => {
 };
 
 export default {
-  getAllCommentsForTask,
-  createCommentForTask,
-  updateComment,
+  getAllTaskComments,
+  createTaskComment,
   deleteComment,
+  updateComment,
 };

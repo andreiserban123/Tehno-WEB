@@ -11,23 +11,23 @@
  * @property {Array} rights - The rights granted by the permission. This field is required.
  */
 export default (sequelize, DataTypes) => {
-  return sequelize.define("permission", {
+  return sequelize.define('permission', {
     forResource: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: false
     },
     forUser: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: false
     },
     type: {
-      type: DataTypes.ENUM("task", "project"),
-      allowNull: false,
+      type: DataTypes.ENUM('task', 'project'),
+      allowNull: false
     },
     rights: {
       type: DataTypes.JSON,
       allowNull: false,
-      defaultValue: [],
-    },
-  });
+      defaultValue: []
+    }
+  })
 }

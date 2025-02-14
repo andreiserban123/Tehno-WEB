@@ -9,10 +9,19 @@ class TaskStore {
     this.emitter = new EventEmitter();
   }
 
-  async getAll(state, projectId, pageNumber, pageSize) {
+  async getAll(
+    state,
+    projectId,
+    pageNumber = 0,
+    pageSize = 10,
+    filterField = "",
+    filterValue = "",
+    sortField = "",
+    sortOrder = ""
+  ) {
     try {
       const response = await fetch(
-        `${SERVER}/api/users/${state.user.data.id}/projects/${projectId}/tasks?page=${pageNumber}&pageSize=${pageSize}`,
+        `${SERVER}/api/users/${state.user.data.id}/projects/${projectId}/tasks?pageNumber=${pageNumber}&pageSize=${pageSize}&filterField=${filterField}&filterValue=${filterValue}&sortField=${sortField}&sortOrder=${sortOrder}`,
         {
           headers: {
             authorization: state.user.data.token,
@@ -56,8 +65,6 @@ class TaskStore {
 
   async createOne(state, projectId, task) {
     try {
-      console.log(task);
-
       const response = await fetch(
         `${SERVER}/api/users/${state.user.data.id}/projects/${projectId}/tasks`,
         {
@@ -72,7 +79,7 @@ class TaskStore {
       if (!response.ok) {
         throw response;
       }
-      this.getAll(state);
+      this.getAll(state, projectId);
     } catch (err) {
       console.warn(err);
       this.emitter.emit("ADD_TASK_ERROR");
@@ -95,7 +102,7 @@ class TaskStore {
       if (!response.ok) {
         throw response;
       }
-      this.getAll(state);
+      this.getAll(state, projectId);
     } catch (err) {
       console.warn(err);
       this.emitter.emit("SAVE_TASK_ERROR");
@@ -116,8 +123,7 @@ class TaskStore {
       if (!response.ok) {
         throw response;
       }
-      // Aici este problema. Get all intoarce un array gol
-      this.getAll(state);
+      this.getAll(state, projectId);
     } catch (err) {
       console.warn(err);
       this.emitter.emit("DELETE_TASK_ERROR");
@@ -140,7 +146,7 @@ class TaskStore {
       if (!response.ok) {
         throw response;
       }
-      this.getAll(state);
+      this.getAll(state, projectId);
     } catch (err) {
       console.warn(err);
       this.emitter.emit("ASSIGN_TASK_ERROR");
@@ -163,14 +169,13 @@ class TaskStore {
       if (!response.ok) {
         throw response;
       }
-      this.getAll(state);
+      this.getAll(state, projectId);
     } catch (err) {
       console.warn(err);
       this.emitter.emit("UPDATE_STATUS_ERROR");
     }
   }
 
-  // Store - preluam toate comentariile pentru un task
   async getComments(state, projectId, taskId) {
     try {
       const response = await fetch(
@@ -185,7 +190,7 @@ class TaskStore {
         throw response;
       }
       const content = await response.json();
-      this.selectedTask.comments = content;
+      this.selectedTask.comments = content || [];
       this.emitter.emit("GET_COMMENTS_SUCCESS");
     } catch (err) {
       console.warn(err);

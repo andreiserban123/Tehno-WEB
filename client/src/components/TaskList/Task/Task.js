@@ -30,23 +30,18 @@ const Task = ({ task }) => {
                 onChange={(e) => setDescription(e.target.value)}
               />
               <select value={label} onChange={(e) => setLabel(e.target.value)}>
-                <option value="bug">bug</option>
-                <option value="urgent">urgent</option>
-                <option value="feature">feature</option>
+                <option value="bug">Bug</option>
+                <option value="feature">Feature</option>
+                <option value="urgent">Urgent</option>
               </select>
               <button onClick={() => setIsEditing(false)}>Cancel</button>
               <button
                 onClick={() => {
-                  globalState.task.updateOne(
-                    globalState,
-                    globalState.project.data.id,
-                    task.id,
-                    {
-                      title,
-                      description,
-                      label,
-                    }
-                  );
+                  globalState.task.updateOne(globalState, params.pid, task.id, {
+                    title,
+                    description,
+                    label,
+                  });
                   setIsEditing(false);
                 }}
               >
@@ -58,8 +53,8 @@ const Task = ({ task }) => {
           <>
             <td>{task.title}</td>
             <td>{task.description}</td>
-            <td>{task.label}</td>
             <td>{task.status}</td>
+            <td>{task.label}</td>
             <td>{task.assignedTo ? task.assignedTo.email : "unassigned"}</td>
             <td>
               <button onClick={() => setIsEditing(true)}>Edit</button>
@@ -84,8 +79,8 @@ const Task = ({ task }) => {
         <>
           <td>{task.title}</td>
           <td>{task.description}</td>
-          <td>{task.label}</td>
           <td>{task.status}</td>
+          <td>{task.label}</td>
           <td>{task.assignedTo ? task.assignedTo.email : "unassigned"}</td>
           <td>
             <button

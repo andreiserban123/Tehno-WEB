@@ -34,7 +34,7 @@ apiRouter.get(
 );
 apiRouter.post(
   "/users/:uid/projects/:pid/tasks",
-  // middleware.getPermMiddleware("pid", ["write"]),
+  middleware.getPermMiddleware("pid", ["write"]),
   controllers.task.createOwnedTaskForProject
 );
 apiRouter.put(
@@ -44,7 +44,7 @@ apiRouter.put(
 );
 apiRouter.delete(
   "/users/:uid/projects/:pid/tasks/:tid",
-  middleware.getPermMiddleware("tid", ["write"]), // Aici este gresit! Ca sa stegem un task de ce sa avem nevoie de write pe proiect?
+  middleware.getPermMiddleware("pid", ["write"]),
   controllers.task.deleteOwnedTaskForProject
 );
 apiRouter.post(
@@ -58,32 +58,33 @@ apiRouter.put(
   controllers.task.updateAssignedTaskStatus
 );
 
+// task comments
+apiRouter.get(
+  "/users/:uid/projects/:pid/tasks/:tid/comments",
+  middleware.commentTaskMiddleware("pid", ["write"]),
+  controllers.comment.getAllTaskComments
+);
+apiRouter.post(
+  "/users/:uid/projects/:pid/tasks/:tid/comments",
+  middleware.commentTaskMiddleware("pid", ["write"]),
+  controllers.comment.createTaskComment
+);
+
+apiRouter.put(
+  "/users/:uid/projects/:pid/tasks/:tid/comments/:cid",
+  middleware.commentTaskMiddleware("pid", ["write"]),
+  controllers.comment.updateComment
+);
+apiRouter.delete(
+  "/users/:uid/projects/:pid/tasks/:tid/comments/:cid",
+  middleware.commentTaskMiddleware("pid", ["write"]),
+  controllers.comment.deleteComment
+);
+
 // get user profile
 apiRouter.get("/users/:uid/profile", controllers.user.getUserProfile);
 
 // suggest user based on email
 apiRouter.get("/users/suggestions", controllers.user.suggestUser);
-
-// Comments endpoints
-apiRouter.get(
-  "/users/:uid/projects/:pid/tasks/:tid/comments",
-  middleware.commentAccessMiddleware,
-  controllers.comment.getAllCommentsForTask
-);
-apiRouter.post(
-  "/users/:uid/projects/:pid/tasks/:tid/comments",
-  middleware.commentAccessMiddleware,
-  controllers.comment.createCommentForTask
-);
-apiRouter.put(
-  "/users/:uid/projects/:pid/tasks/:tid/comments/:cid",
-  middleware.commentAccessMiddleware,
-  controllers.comment.updateComment
-);
-apiRouter.delete(
-  "/users/:uid/projects/:pid/tasks/:tid/comments/:cid",
-  middleware.commentAccessMiddleware,
-  controllers.comment.deleteComment
-);
 
 export default apiRouter;

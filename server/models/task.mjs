@@ -11,7 +11,10 @@
  */
 export default (sequelize, DataTypes) => {
   return sequelize.define("task", {
-    title: { type: DataTypes.STRING, allowNull: false },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -22,9 +25,9 @@ export default (sequelize, DataTypes) => {
       defaultValue: "open",
     },
     label: {
-      type: DataTypes.TEXT,
-      values: ["urgent", "bug", "feature"],
-      defaultValue: "feature",
+      type: DataTypes.ENUM("bug", "feature", "urgent"),
+      allowNull: false,
+      defaultValue: "bug",
     },
   });
 };

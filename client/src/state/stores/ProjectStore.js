@@ -6,12 +6,11 @@ class ProjectStore {
     this.data = []
     this.count = 0
     this.emitter = new EventEmitter()
-    this.selectedProject = null
   }
 
-  async getAll (state, pageNumber = '', pageSize = '', filterField = '', filterValue = '', sortField = '', sortOrder = '') {  
+  async getAll (state, pageNumber = '', pageSize = '', filterField = '', filterValue = '', sortField = '', sortOrder = '') {
     try {
-      const response = await fetch(`${SERVER}/api/users/${state.user.data.id}/projects?pageSize=${pageSize === ''? 10 : pageSize}&pageNumber=${pageNumber === ''? 1 : pageNumber}&filterField=${filterField || ''}&filterValue=${filterValue || ''}&sortField=${sortField || ''}&sortOrder=${sortOrder || ''}`, {
+      const response = await fetch(`${SERVER}/api/users/${state.user.data.id}/projects?pageSize=${pageSize || ''}&pageNumber=${pageNumber  === '' ? 0 : pageNumber}&filterField=${filterField || ''}&filterValue=${filterValue || ''}&sortField=${sortField || ''}&sortOrder=${sortOrder || ''}`, {
         headers: {
           authorization: state.user.data.token
         }
@@ -26,26 +25,6 @@ class ProjectStore {
     } catch (err) {
       console.warn(err)
       this.emitter.emit('GET_PROJECTS_ERROR')
-    }
-  }
-
-  async getOne (state, projectId) {
-    try {
-      const response = await fetch(`${SERVER}/api/users/${state.user.data.id}/projects/${projectId}`, {
-        headers: {
-          authorization: state.user.data.token
-        }
-      })
-      if (!response.ok) {
-        throw response
-      }
-      const content = await response.json()
-      this.selectedProject = content
-      this.data = { ...content }  // Also update data for compatibility
-      this.emitter.emit('GET_PROJECT_SUCCESS')
-    } catch (err) {
-      console.warn(err)
-      this.emitter.emit('GET_PROJECT_ERROR')
     }
   }
 

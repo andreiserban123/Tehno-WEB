@@ -1,10 +1,10 @@
 class EventEmitter {
-  constructor() {
+  constructor () {
     this.events = new Map()
   }
 
   // Subscribes to an event
-  addListener(event, callback) {
+  addListener (event, callback) {
     if (!this.events.has(event)) {
       this.events.set(event, new Set())
     }
@@ -23,7 +23,7 @@ class EventEmitter {
   }
 
   // Emits an event, triggering all callbacks
-  emit(event, ...args) {
+  emit (event, ...args) {
     const callbacks = this.events.get(event)
     if (callbacks) {
       for (const callback of callbacks) {
@@ -33,9 +33,9 @@ class EventEmitter {
   }
 
   // Removes all listeners for an event
-  removeAllListeners(event) {
+  removeAllListeners (event) {
     this.events.delete(event)
   }
 }
-  
+
 export default EventEmitter

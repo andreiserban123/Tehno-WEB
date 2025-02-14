@@ -1,6 +1,6 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import AppContext from "../../state/AppContext";
 
 import AuthGuard from "../AuthGuard";
@@ -11,14 +11,15 @@ import TaskList from "../TaskList";
 import TaskForm from "../TaskForm";
 import TaskDetails from "../TaskDetails";
 import Dashboard from "../Dashboard";
-import UserList from "../UserList";
+import RoleGuard from "../RoleGuard";
 
 import UserStore from "../../state/stores/UserStore";
 import ProjectStore from "../../state/stores/ProjectStore";
 import TaskStore from "../../state/stores/TaskStore";
 import UserSuggestionStore from "../../state/stores/UserSuggestionStore";
 import ErrorDisplay from "../ErrorDisplay";
-import RoleGuard from "../RoleGuard";
+import RegisterForm from "../RegisterForm";
+import UserList from "../UserList";
 import UserForm from "../UserForm";
 
 const App = () => {
@@ -28,7 +29,6 @@ const App = () => {
   const [taskStore] = useState(new TaskStore());
   const [userSuggestionStore] = useState(new UserSuggestionStore());
   const [role, setRole] = useState("");
-
   useEffect(() => {
     userStore.emitter.addListener("LOGIN_SUCCESS", () => {
       setIsAuthenticated(true);
@@ -66,6 +66,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm />} />
           <Route
             path="/"
             element={
@@ -74,32 +75,23 @@ const App = () => {
               </AuthGuard>
             }
           />
-          <Route
-            path="/dashboard/:type"
-            element={
-              <AuthGuard isAuthenticated={isAuthenticated}>
-                <Dashboard />
-              </AuthGuard>
-            }
-          />
 
-          {/* USER LISTS */}
+          {/* User list */}
           <Route
             path="/dashboard/users"
             element={
               <AuthGuard isAuthenticated={isAuthenticated}>
-                <RoleGuard state={role} role="admin">
+                <RoleGuard currentRole={role} role="admin">
                   <UserList />
                 </RoleGuard>
               </AuthGuard>
             }
           />
-
           <Route
             path="/dashboard/users/new"
             element={
               <AuthGuard isAuthenticated={isAuthenticated}>
-                <RoleGuard state={role} role="admin">
+                <RoleGuard currentRole={role} role="admin">
                   <UserForm />
                 </RoleGuard>
               </AuthGuard>

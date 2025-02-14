@@ -1,24 +1,33 @@
 import models from "../../models/index.mjs";
+import { Op } from "sequelize";
 
 const getAllTasksForProject = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
-    const offset = (page - 1) * pageSize;
+    const query = {};
+    const filterQuery = {};
 
-    const query = {
-      where: {
-        projectId: req.params.pid,
-      },
-      limit: pageSize,
-      offset: offset,
-    };
+    if (req.query.filterField && req.query.filterValue) {
+      query.where = {
+        [req.query.filterField]: {
+          [Op.like]: `%${req.query.filterValue}%`,
+        },
+      };
+      filterQuery.where = {
+        [req.query.filterField]: {
+          [Op.like]: `%${req.query.filterValue}%`,
+        },
+      };
+    }
 
-    const filterQuery = {
-      where: {
-        projectId: req.params.pid,
-      },
-    };
+    if (req.query.pageSize && req.query.pageNumber) {
+      query.limit = req.query.pageSize;
+      query.offset =
+        parseInt(req.query.pageSize) * parseInt(req.query.pageNumber);
+    }
+
+    if (req.query.sortField && req.query.sortOrder) {
+      query.order = [[req.query.sortField, req.query.sortOrder]];
+    }
 
     const count = await models.Task.count({
       ...filterQuery,
@@ -31,7 +40,6 @@ const getAllTasksForProject = async (req, res, next) => {
         required: false,
       },
     });
-
     const data = await models.Task.findAll({
       ...query,
       include: [
@@ -51,7 +59,6 @@ const getAllTasksForProject = async (req, res, next) => {
         },
       ],
     });
-
     res.status(200).json({ data, count });
   } catch (err) {
     next(err);
@@ -94,19 +101,16 @@ const getOneTaskForProject = async (req, res, next) => {
 
 const createOwnedTaskForProject = async (req, res, next) => {
   try {
-    console.log(req.body);
     const task = await models.Task.create({
       ...req.body,
       projectId: req.params.pid,
-      userId: req.params.uid,
     });
-    const pers = await models.Permission.create({
+    await models.Permission.create({
       forResource: task.id,
       forUser: req.params.uid,
       type: "task",
       rights: ["read", "write"],
     });
-
     res.status(201).json(task);
   } catch (err) {
     next(err);
@@ -140,24 +144,15 @@ const deleteOwnedTaskForProject = async (req, res, next) => {
         projectId: req.params.pid,
       },
     });
-    if (task) {
-      // Delete all comments associated with the task
-      await models.Comment.destroy({
-        where: {
-          taskId: req.params.tid,
-        },
-      });
-
-      // Delete the permission associated with the task
-      const permission = await models.Permission.findOne({
-        where: {
-          forResource: req.params.tid,
-          forUser: req.params.uid,
-          type: "task",
-        },
-      });
+    const permission = await models.Permission.findOne({
+      where: {
+        forResource: req.params.tid,
+        forUser: req.params.uid,
+        type: "task",
+      },
+    });
+    if (task && permission) {
       await permission.destroy();
-
       await task.destroy();
       res.status(204).end();
     } else {

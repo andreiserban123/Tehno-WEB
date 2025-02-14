@@ -1,7 +1,7 @@
 import React from "react";
 
-const RoleGuard = ({ state, children, role }) => {
-  if (state !== role) {
+const RoleGuard = ({ currentRole, children, role }) => {
+  if (currentRole !== role) {
     return (
       <div>
         <h1>Unauthorized</h1>

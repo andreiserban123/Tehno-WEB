@@ -33,9 +33,9 @@ const TaskForm = () => {
         onChange={(e) => setDescription(e.target.value)}
       />
       <select value={label} onChange={(e) => setLabel(e.target.value)}>
-        <option value="bug">bug</option>
-        <option value="urgent">urgent</option>
-        <option value="feature">feature</option>
+        <option value="bug">Bug</option>
+        <option value="feature">Feature</option>
+        <option value="urgent">Urgent</option>
       </select>
       <button
         onClick={() => {

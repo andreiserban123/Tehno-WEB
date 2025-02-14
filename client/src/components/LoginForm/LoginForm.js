@@ -1,10 +1,10 @@
 import './LoginForm.css'
 import React, { useState, useContext, useEffect } from 'react'
 import AppContext from '../../state/AppContext'
-import { useLocation, useNavigate } from 'react-router-dom'
+import {Link, useLocation, useNavigate} from 'react-router-dom'
 
 const LoginForm = () => {
-  const [ isAuthenticated, setIsAuthenticated ] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const { user } = useContext(AppContext)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -15,14 +15,16 @@ const LoginForm = () => {
     user.login(email, password)
   }
 
-
   useEffect(() => {
     user.emitter.addListener('LOGIN_SUCCESS', () => {
       setIsAuthenticated(true)
-      navigate(location.state.from)
+      if(location.state && location.state.from){
+        navigate(location.state.from)
+      }else{
+        navigate('/')
+      }
     })
   }, [])
-
 
   return (
     <div className='login-form'>
@@ -41,7 +43,9 @@ const LoginForm = () => {
           onChange={e => setPassword(e.target.value)}
         />
         <button onClick={handleLoginClick}>Login</button>
-      </div>    
+
+        <Link to={'/register'}>Register</Link>
+      </div>
     </div>
   )
 }

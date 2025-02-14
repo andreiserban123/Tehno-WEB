@@ -6,35 +6,32 @@ const User = ({ user }) => {
   const [editingPassword, setEditingPassword] = useState("");
   const [editingType, setEditingType] = useState("");
   const globalState = useContext(AppContext);
+  console.log(user);
+
   return (
     <tr>
       {isEditing ? (
         <>
           <td>{user.email}</td>
+          <td>{user.passwordHash}</td>
 
           <td>
-            <input
-              type="text"
-              value={editingPassword}
-              onChange={(e) => setEditingPassword(e.target.value)}
-            />
-          </td>
-
-          <td>
-            <input
-              type="text"
+            <select
               value={editingType}
               onChange={(e) => setEditingType(e.target.value)}
-            />
+            >
+              <option>admin</option>
+              <option>regular</option>
+            </select>
           </td>
           <td>
             <button onClick={() => setIsEditing(false)}>Cancel</button>
             <button
               onClick={() => {
                 globalState.user.updateOne({
-                  id: editingUserId,
+                  id: user.id,
                   email: user.email,
-                  password: editingPassword,
+                  passwordHash: user.passwordHash,
                   type: editingType,
                 });
                 setIsEditing(false);

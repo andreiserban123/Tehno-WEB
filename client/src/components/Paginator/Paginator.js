@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 const Paginator = (props) => {
   const { onPageChange, onPageSizeChange, totalRecords } = props;
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
 
   return (
@@ -11,7 +11,7 @@ const Paginator = (props) => {
       <div className="navigators">
         <button
           onClick={() => {
-            if (page > 1) {
+            if (page > 0) {
               setPage(page - 1);
               onPageChange(page - 1);
             }
@@ -21,7 +21,7 @@ const Paginator = (props) => {
         </button>
         <button
           onClick={() => {
-            if (page < Math.ceil(totalRecords / pageSize)) {
+            if (page < Math.floor(totalRecords / pageSize)) {
               setPage(page + 1);
               onPageChange(page + 1);
             }
@@ -36,11 +36,8 @@ const Paginator = (props) => {
           type="number"
           value={pageSize}
           onChange={(e) => {
-            const value = parseInt(e.target.value);
-            let newSize = isNaN(value) ? 0 : value;
-            if (newSize <= 0) newSize = 0;
-            setPageSize(newSize);
-            onPageSizeChange(newSize);
+            setPageSize(e.target.value);
+            onPageSizeChange(e.target.value);
           }}
         />
       </label>
